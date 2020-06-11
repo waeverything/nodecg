@@ -1,27 +1,28 @@
 FROM node:10
 
-WORKDIR /opt/nodecg
+WORKDIR /home/container/nodecg
 
-RUN addgroup --system nodecg && adduser --system nodecg --ingroup nodecg && \
+RUN adduser -D -h /home/container container && \
     npm install -g nodecg-cli && \
     mkdir cfg && mkdir bundles && mkdir logs && mkdir db && \
-    chown -R nodecg:nodecg /opt/nodecg
+    chown -R container:container /home/container/nodecg
 
 USER nodecg
 
 # Copy package.json and package-lock.json
-COPY --chown=nodecg:nodecg package*.json /opt/nodecg/
+COPY --chown=container:container package*.json /home/container/nodecg
 
 # Install dependencies
 RUN npm ci --production
 
 # Copy NodeCG (just the files we need)
-COPY --chown=nodecg:nodecg . /opt/nodecg/
+COPY --chown=container:container . /home/container/nodecg
 
 # Define directories that should be persisted in a volume
-VOLUME /opt/nodecg/cfg /opt/nodecg/bundles /opt/nodecg/logs /opt/nodecg/db
+VOLUME /home/container/nodecgcfg /home/container/nodecgbundles /home/container/nodecglogs /home/container/nodecgdb
 # Define ports that should be used to communicate
-EXPOSE 9090/tcp
+EXPOSE {{server.build.default.port}}/tcp
 
 # Define command to run NodeCg
-CMD ["nodecg", "start"]
+COPY ./entrypoint.sh /entrypoint.sh
+CMD ["/bin/bash", "/entrypoint.sh"]
