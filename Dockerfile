@@ -9,11 +9,6 @@ RUN useradd -ms /bin/bash -u 1001 container && \
 
 WORKDIR /home/container/
 
-RUN mkdir cfg && mkdir bundles && mkdir logs && mkdir db 
-
-# Copy package.json and package-lock.json
-COPY --chown=container:container package*.json /home/container/
-
 #RUN chown -R container:container /home/container/.npm
 
 USER        container
@@ -21,10 +16,8 @@ ENV         USER=container HOME=/home/container
 WORKDIR     /home/container/
 
 # Install dependencies
-RUN npm ci --production
+RUN nodecg setup
 
-# Copy NodeCG (just the files we need)
-COPY --chown=container:container . /home/container/
 
 
 # Define command to run NodeCg
