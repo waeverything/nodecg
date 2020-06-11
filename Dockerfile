@@ -26,9 +26,6 @@ RUN npm ci --production
 # Copy NodeCG (just the files we need)
 COPY --chown=container:container . /home/container/
 
-# Define directories that should be persisted in a volume
-VOLUME /home/container/cfg /home/container/bundles /home/container/logs /home/container/db
-
 
 # Define command to run NodeCg
 COPY ./entrypoint.sh /entrypoint.sh
